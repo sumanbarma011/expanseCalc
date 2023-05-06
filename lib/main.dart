@@ -24,7 +24,42 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  List<Transaction> _usersTransactions = [
+    Transaction(
+        id: 'T1', title: 'New Shoes', amount: 99.99, date: DateTime.now()),
+    Transaction(
+        id: 'T2', title: 'New Clothes', amount: 33.54, date: DateTime.now())
+  ];
+  void _addTransaction(String txTitle, double txAmount) {
+    final newTx = Transaction(
+      id: DateTime.now().toString(),
+      title: txTitle,
+      amount: txAmount,
+      date: DateTime.now(),
+    );
+    setState(() {
+      _usersTransactions.add(newTx);
+    });
+  }
+
+  void _startAddNewTransaction(BuildContext ctx) {
+    showModalBottomSheet(
+        context: ctx,
+        builder: (_) {
+          return GestureDetector(
+            onTap: () {},
+            child: NewTransaction(addTransaction: _addTransaction),
+            behavior:HitTestBehavior.opaque ,
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,16 +81,15 @@ class App extends StatelessWidget {
                 ),
               ),
             ),
-            UserTransaction(),
-            
-          
-            
+            TransactionList(transactions: _usersTransactions)
           ],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(onPressed: null,child: Icon(Icons.add),),
-      
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _startAddNewTransaction(context),
+        child: Icon(Icons.add),
+      ),
     );
   }
 }
